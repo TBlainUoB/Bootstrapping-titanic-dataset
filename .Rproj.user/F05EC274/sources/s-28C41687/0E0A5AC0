@@ -1,0 +1,26 @@
+{
+    "id": "0E0A5AC0",
+    "path": "~/Bayesian/bootstrapping ds/Bootstrapping/Bootstrapping titanic age data.Rmd",
+    "project_path": "Bootstrapping titanic age data.Rmd",
+    "type": "r_markdown",
+    "hash": "3882062521",
+    "contents": "",
+    "dirty": false,
+    "created": 1666282685721.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "tempName": "Untitled1",
+        "cursorPosition": "54,0",
+        "scrollLine": "43",
+        "last_setup_crc32": "28C41687bb338d19"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1666296605,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1666296605387,
+    "read_only": false,
+    "read_only_alternatives": []
+}
