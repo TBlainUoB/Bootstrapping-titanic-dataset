@@ -9,7 +9,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r, warning=FALSE,message=FALSE}
 library("readr") #For read_csv
 library("dplyr")
 library("knitr") # For kable 
