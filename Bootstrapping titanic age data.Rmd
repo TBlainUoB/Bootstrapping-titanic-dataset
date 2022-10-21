@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library("readr") #For read_csv
 library("dplyr")
 library("knitr") # For kable 
+library("coxed")
 
 data <- read_csv(("01-Data.csv"))
 data<-as.data.frame(data)
@@ -31,7 +32,7 @@ c("True mean", mean(age_data))
 We know the true mean of the data.
 For our bootstrapping experiment, we will take a random sample of "n" values from the population.
 ```{r}
-n <- 30
+n <- 50
 sample_age <- sample(age_data, n, replace = FALSE)
 
 c("Sample mean", mean(sample_age))
@@ -41,8 +42,8 @@ R has a built in function for this, known as boot(),
 We can also use sample() with replace set to true,
 
 ```{r}
-bootstrap <- function(age_data, mean_subsamples){
-  subsample <- sample(age_data, n, replace = TRUE)
+bootstrap <- function(sample_age, mean_subsamples){
+  subsample <- sample(sample_age, n, replace = TRUE)
   mean_subsamples <- append(mean_subsamples, mean(subsample))
   return(mean_subsamples)
   }
@@ -50,7 +51,7 @@ bootstrap <- function(age_data, mean_subsamples){
 iterations <- 10000
 bootstrap_means <- c()
 for(i in 1:iterations){
-  bootstrap_means <- bootstrap(age_data, bootstrap_means)
+  bootstrap_means <- bootstrap(sample_age, bootstrap_means)
 }
 
 hist(bootstrap_means, breaks = 20, xlab = "Mean of bootstrapped subsamples", ylab = "Frequency", main = "Bootstrapped Means")
@@ -60,8 +61,24 @@ coords <- locator()
 c("The True population mean is",mean(age_data))
 c("Our bootstrapped estimate of the population mean from a random sample is",mean(bootstrap_means))
 
-
 ```
+```{r}
+CI <- 0.95
+orderedmean <- sort(bootstrap_means)
+lower <- orderedmean[iterations*((1-CI)/2)]
+upper <- orderedmean[iterations - (iterations*(1- CI)/2)]
+c("Percentile CI",lower,upper)
+
+bca <- bca(bootstrap_means, CI)
+c("BCa CI", bca)
+hist(bootstrap_means, breaks = 20, xlab = "Mean of bootstrapped subsamples", ylab = "Frequency", main = "Confidence intervals (n=50)")
+abline(v = lower, col = "red")
+abline(v = upper, col = "red")
+abline(v = bca[1], col = "blue")
+abline(v = bca[2], col = "blue")
+legend("topright",c("Percentile Interval", "BCa Interval"), fill = c("red","blue"))
+```
+
 lets experiment with the size of the sample from the dataset.
 ```{r}
 n <- c(10,30,50,100)
