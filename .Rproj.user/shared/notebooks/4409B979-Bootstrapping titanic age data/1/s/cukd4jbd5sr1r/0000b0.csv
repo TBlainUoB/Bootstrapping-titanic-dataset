@@ -1,2 +1,0 @@
-"0","abline(v = mean(age_data), col = ""red"", label = ""true population mean"")"
-"2","""label"" is not a graphical parameter"
