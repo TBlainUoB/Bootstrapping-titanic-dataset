@@ -147,7 +147,8 @@ for(i in 1:iterations){
 }
 
 hist(bootstrap_means_M, breaks = 20, xlab = "Mean of bootstrapped subsamples (age)", ylab = "Frequency", main = "Bootstrapped Means")
-hist(bootstrap_means_F, breaks = 20, add = TRUE, col = "grey")
+hist(bootstrap_means_F, breaks = 20, add = TRUE, col = "dark grey")
+legend(38, 1200, legend = c("Male", "Female"), fill = c("white", "dark grey"))
 
 ```
 ```{r}
