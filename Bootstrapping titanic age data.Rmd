@@ -85,8 +85,8 @@ n <- c(10,30,50,100)
 colours <- c("blue", "red", "green", "orange", "pink")
 for (j in 1:length(n)){
   sample_age <- sample(age_data, n[j], replace = FALSE)
-  bootstrap <- function(age_data, mean_subsamples){
-    subsample <- sample(age_data, n[j], replace = TRUE)
+  bootstrap <- function(sample_age, mean_subsamples){
+    subsample <- sample(sample_age, n[j], replace = TRUE)
     mean_subsamples <- append(mean_subsamples, mean(subsample))
     return(mean_subsamples)
     }
@@ -94,7 +94,7 @@ for (j in 1:length(n)){
   iterations <- 10000
   bootstrap_means <- c()
   for(i in 1:iterations){
-    bootstrap_means <- bootstrap(age_data, bootstrap_means)
+    bootstrap_means <- bootstrap(sample_age, bootstrap_means)
   }
   if(j == 1){
     plot(density(bootstrap_means), xlab = "Age", xlim = c(20,50),ylim = c(0,0.3), col=colours[j], main = "comparison of sample sizes used for bootstrap")
