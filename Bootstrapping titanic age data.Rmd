@@ -32,8 +32,6 @@ head(data)
 data <- subset(data, data$Age >= 18)
 age_data <- data$Age
 age_data <- age_data[!is.na(age_data)]
-head(age_data)
-length(age_data)
 c("True mean", mean(age_data))
 ```
 We know the true mean of the data.
@@ -160,7 +158,7 @@ c("Percentile CI",lower,upper)
 
 bca <- bca(bootstrap_means, CI)
 c("BCa CI", bca)
-hist(bootstrap_means, breaks = 20, xlab = "Mean of bootstrapped subsamples (age)", ylab = "Frequency", main = "CI bootstrapped subsamples for Male survivor data (n=50)")
+hist(bootstrap_means, breaks = 20, xlab = "Mean of bootstrapped subsamples (age)", ylab = "Frequency", main = "CI Male survivor data (n=50)")
 abline(v = lower, col = "red")
 abline(v = upper, col = "red")
 abline(v = bca[1], col = "blue")
