@@ -15,18 +15,25 @@ library("dplyr")
 library("knitr") # For kable 
 library("coxed")
 
-data <- read_csv(("01-Data.csv"))
+data <- read_csv(("TitanicFull.csv"))
 data<-as.data.frame(data)
 ```
 Hopefully anyone reading this will have seen the titanic dataset before,
 For some introduction and background to the dataset, please see https://www.kaggle.com/competitions/titanic/overview
 
+In this experiment we are interested in studying the average age of adult passengers on the titanic.
+We will apply bootstrapping techniques on a random sample of the population.
+Then we will filter the data to survivors and separate by sex.
+
 ```{r}
 head(data)
 ```
 ```{r}
+data <- subset(data, data$Age >= 18)
 age_data <- data$Age
 age_data <- age_data[!is.na(age_data)]
+head(age_data)
+length(age_data)
 c("True mean", mean(age_data))
 ```
 We know the true mean of the data.
@@ -55,7 +62,7 @@ for(i in 1:iterations){
 }
 
 hist(bootstrap_means, breaks = 20, xlab = "Mean of bootstrapped subsamples", ylab = "Frequency", main = "Bootstrapped Means")
-abline(v = mean(age_data), col = "red", label = "true population mean")
+abline(v = mean(age_data), col = "red")
 #text(locator(), labels = "True pop mean")
 coords <- locator()
 c("The True population mean is",mean(age_data))
@@ -97,7 +104,7 @@ for (j in 1:length(n)){
     bootstrap_means <- bootstrap(sample_age, bootstrap_means)
   }
   if(j == 1){
-    plot(density(bootstrap_means), xlab = "Age", xlim = c(20,50),ylim = c(0,0.3), col=colours[j], main = "comparison of sample sizes used for bootstrap")
+    plot(density(bootstrap_means), xlab = "Age", xlim = c(18,50),ylim = c(0,0.3), col=colours[j], main = "comparison of sample sizes used for bootstrap")
   }else{
     lines(density(bootstrap_means), col=colours[j])
   }
@@ -108,4 +115,56 @@ legend(45, 0.25, legend = n, fill = colours, title = "sample size")
 The results here are as expected. This shows the real world issue of choosing the right sample size to give a meaningful confidence interval when weighed up to cost and feasability - we will almost never have access to a whole population dataset.
 
 
+Now we filter by survived and split the data by sex
+```{r}
+survived_M <- subset(data, data$Survived == "1" & data$Sex == "male" & data$Age >= 18)
+surv_data_M <- survived_M$Age
+surv_data_M <- surv_data_M[!is.na(surv_data_M)]
+
+survived_F <- subset(data, data$Survived == "1" & data$Sex == "female" & data$Age >= 18)
+surv_data_F <- survived_F$Age
+surv_data_F <- surv_data_F[!is.na(surv_data_F)]
+
+n <- 50
+sample_age_M <- sample(surv_data_M, n, replace = FALSE)
+sample_age_F <- sample(surv_data_F, n, replace = FALSE)
+
+#c("Sample mean", mean(sample_age_M))
+
+bootstrap <- function(sample_age, mean_subsamples){
+  subsample <- sample(sample_age, n, replace = TRUE)
+  mean_subsamples <- append(mean_subsamples, mean(subsample))
+  return(mean_subsamples)
+  }
+
+iterations <- 10000
+bootstrap_means_M <- c()
+bootstrap_means_F <- c()
+for(i in 1:iterations){
+  bootstrap_means_M <- bootstrap(sample_age_M, bootstrap_means_M)
+  bootstrap_means_F <- bootstrap(sample_age_F, bootstrap_means_F)
+  
+}
+
+hist(bootstrap_means_M, breaks = 20, xlab = "Mean of bootstrapped subsamples (age)", ylab = "Frequency", main = "Bootstrapped Means")
+hist(bootstrap_means_F, breaks = 20, add = TRUE, col = "grey")
+
+```
+```{r}
+CI <- 0.95
+orderedmean <- sort(bootstrap_means_M)
+lower <- orderedmean[iterations*((1-CI)/2)]
+upper <- orderedmean[iterations - (iterations*(1- CI)/2)]
+c("Percentile CI",lower,upper)
+
+bca <- bca(bootstrap_means, CI)
+c("BCa CI", bca)
+hist(bootstrap_means, breaks = 20, xlab = "Mean of bootstrapped subsamples (age)", ylab = "Frequency", main = "CI bootstrapped subsamples for Male survivor data (n=50)")
+abline(v = lower, col = "red")
+abline(v = upper, col = "red")
+abline(v = bca[1], col = "blue")
+abline(v = bca[2], col = "blue")
+legend("topright",c("Percentile Interval", "BCa Interval"), fill = c("red","blue"))
+```
+There appears to be a large difference in the BCa and percentile intervals. This may indicate bias and/or skewness in the data. More research into the bias and skewness should be conducted.
 
